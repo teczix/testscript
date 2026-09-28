@@ -5,7 +5,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$SetupKey = "BDB063A0-E9C8-49D6-AD41-AE93B61A13B3"
+$SetupKey = "90F70889-EC37-4965-A310-1E57B05366EC"
 
 $downloadUrl = "https://pkgs.netbird.io/windows/x64"
 $installerPath = Join-Path $env:TEMP "netbird-installer.exe"
@@ -19,7 +19,7 @@ function Fail {
 }
 
 try {
-    Write-Host "Checking administrator privileges..."
+    Write-Host "Checking  privil..."
 
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = [Security.Principal.WindowsPrincipal]$identity
@@ -35,14 +35,14 @@ try {
         Fail "Replace the placeholder setup key before running the script."
     }
 
-    Write-Host "Administrator privileges confirmed." -ForegroundColor Green
+    Write-Host " privil confirmed." -ForegroundColor Green
 }
 catch {
     Fail $_.Exception.Message
 }
 
 try {
-    Write-Host "Downloading NetBird installer..."
+    Write-Host "Down Net ins..."
 
     Invoke-WebRequest `
         -Uri $downloadUrl `
@@ -51,17 +51,17 @@ try {
         -ErrorAction Stop
 
     if (-not (Test-Path -LiteralPath $installerPath)) {
-        Fail "The installer was not downloaded."
+        Fail "The ins was not dow."
     }
 
-    Write-Host "Installer downloaded successfully." -ForegroundColor Green
+    Write-Host "Ins down ully." -ForegroundColor Green
 }
 catch {
-    Fail "Could not download NetBird: $($_.Exception.Message)"
+    Fail "Could not down Net: $($_.Exception.Message)"
 }
 
 try {
-    Write-Host "Installing NetBird silently..."
+    Write-Host "Insing Net silen..."
 
     $installProcess = Start-Process `
         -FilePath $installerPath `
@@ -72,17 +72,17 @@ try {
         -ErrorAction Stop
 
     if ($installProcess.ExitCode -ne 0) {
-        Fail "NetBird installer failed with exit code $($installProcess.ExitCode)."
+        Fail "Net ins failed with exit code $($installProcess.ExitCode)."
     }
 
-    Write-Host "NetBird installed successfully." -ForegroundColor Green
+    Write-Host "Net insed ully." -ForegroundColor Green
 }
 catch {
     Fail "Installation failed: $($_.Exception.Message)"
 }
 
 try {
-    Write-Host "Waiting for NetBird to initialize..."
+    Write-Host "Waiting for Net to init..."
     Start-Sleep -Seconds 5
 
     $netbirdPath = "C:\Program Files\NetBird\netbird.exe"
@@ -94,43 +94,43 @@ try {
             $netbirdPath = $command.Source
         }
         else {
-            Fail "netbird.exe was not found after installation."
+            Fail "net.exe was not found after installation."
         }
     }
 
-    Write-Host "Registering this machine with NetBird..."
-    Write-Host "Running: netbird up --setup-key ********"
+    Write-Host "Reing this mach wit Net..."
+    Write-Host "Running: net up --setup-key ********"
 
     & $netbirdPath up --setup-key $SetupKey
 
     if ($LASTEXITCODE -ne 0) {
-        Fail "NetBird setup failed with exit code $LASTEXITCODE."
+        Fail "Net set failed with exit code $LASTEXITCODE."
     }
 
-    Write-Host "NetBird setup completed successfully." -ForegroundColor Green
+    Write-Host "Net set comp ully." -ForegroundColor Green
 }
 catch {
-    Fail "Could not configure NetBird: $($_.Exception.Message)"
+    Fail "Could not config Net: $($_.Exception.Message)"
 }
 
 try {
-    Write-Host "Checking NetBird status..."
+    Write-Host "Checking Net status..."
     & $netbirdPath status
 }
 catch {
-    Write-Host "WARNING: NetBird was configured, but status could not be checked." `
+    Write-Host "WARNING: Net was config, but status could not be checked." `
         -ForegroundColor Yellow
 }
 
 try {
-    Write-Host "Removing temporary installer..."
+    Write-Host "Rem temp ins..."
     Remove-Item -LiteralPath $installerPath -Force -ErrorAction Stop
-    Write-Host "Temporary installer removed." -ForegroundColor Green
+    Write-Host "Temp ins rem." -ForegroundColor Green
 }
 catch {
     Write-Host "WARNING: Could not remove $installerPath" -ForegroundColor Yellow
 }
 
 Write-Host ""
-Write-Host "NetBird installation and setup completed." -ForegroundColor Green
+Write-Host "Net inst and set comp." -ForegroundColor Green
 Read-Host "Press Enter to exit"
